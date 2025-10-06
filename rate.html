@@ -1,61 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rate Calculator</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #f5f6fa;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    h1 {
-      text-align: center;
-      color: #2f3640;
-      font-size: 24px;
-    }
-    .container {
-      max-width: 400px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 600;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-    .result {
-      background: #f0f8ff;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 20px;
-      font-size: 16px;
-      line-height: 1.6;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rate Calculator</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #f5f6fa;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+  }
+  h1 {
+    text-align: center;
+    color: #2f3640;
+    font-size: 24px;
+  }
+  .container {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 600;
+  }
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+  .result {
+    background: #f0f8ff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+</style>
 </head>
 <body>
   <h1>Rate Calculator</h1>
   <div class="container">
     <label for="rate">AUD Rate:</label>
-    <input type="number" id="rate" step="0.0001" placeholder="e.g. 0.6599">
+    <input type="number" id="rate" step="0.0001" placeholder="e.g. 0.6598">
 
     <label for="amount">Amount (SGD):</label>
-    <input type="number" id="amount" step="0.01" placeholder="e.g. 96250">
+    <input type="number" id="amount" step="0.01" placeholder="e.g. 249600">
 
     <div class="result" id="output">
       <strong>Rate F:</strong> —<br>
@@ -65,44 +65,46 @@
     </div>
   </div>
 
- <script>
-  const r = document.getElementById("rate");
-  const a = document.getElementById("amount");
-  const o = document.getElementById("output");
+  <script>
+    const rateInput = document.getElementById("rate");
+    const amountInput = document.getElementById("amount");
+    const output = document.getElementById("output");
 
-  function truncate(num, decimals) {
-    const factor = Math.pow(10, decimals);
-    return Math.floor(num * factor) / factor;
-  }
+    function calculate() {
+      const rate = parseFloat(rateInput.value);
+      const amount = parseFloat(amountInput.value);
+      if (isNaN(rate) || isNaN(amount)) {
+        output.innerHTML = `
+          <strong>Rate F:</strong> —<br>
+          <strong>Rate T:</strong> —<br>
+          <strong>Result F (USD):</strong> —<br>
+          <strong>Result T (USD):</strong> —
+        `;
+        return;
+      }
 
-  function calculate() {
-    const rate = parseFloat(r.value);
-    const amount = parseFloat(a.value);
-    if (isNaN(rate) || isNaN(amount)) {
-      o.innerHTML = `
-        <strong>Rate F:</strong> —<br>
-        <strong>Rate T:</strong> —<br>
-        <strong>Result F (USD):</strong> —<br>
-        <strong>Result T (USD):</strong> —
+      // 原始精确值
+      const rateF_full = rate * 0.985;
+      const rateT_full = rate * 0.9915;
+
+      // 仅显示时四舍五入到 4 位
+      const rateF_display = Math.round(rateF_full * 10000) / 10000;
+      const rateT_display = Math.round(rateT_full * 10000) / 10000;
+
+      // 金额计算使用完整精度
+      const resultF = rateF_full * amount;
+      const resultT = rateT_full * amount;
+
+      output.innerHTML = `
+        <strong>Rate F:</strong> ${rateF_display.toFixed(4)}<br>
+        <strong>Rate T:</strong> ${rateT_display.toFixed(4)}<br>
+        <strong>Result F (USD):</strong> ${resultF.toFixed(2)}<br>
+        <strong>Result T (USD):</strong> ${resultT.toFixed(2)}
       `;
-      return;
     }
 
-    const rateF = truncate(rate * 0.985, 4);
-    const rateT = truncate(rate * 0.9915, 4);
-    const resultF = rateF * amount;
-    const resultT = rateT * amount;
-
-    o.innerHTML = `
-      <strong>Rate F:</strong> ${rateF.toFixed(4)}<br>
-      <strong>Rate T:</strong> ${rateT.toFixed(4)}<br>
-      <strong>Result F (USD):</strong> ${resultF.toFixed(2)}<br>
-      <strong>Result T (USD):</strong> ${resultT.toFixed(2)}
-    `;
-  }
-
-  r.addEventListener("input", calculate);
-  a.addEventListener("input", calculate);
-</script>
+    rateInput.addEventListener("input", calculate);
+    amountInput.addEventListener("input", calculate);
+  </script>
 </body>
 </html>
