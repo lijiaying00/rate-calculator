@@ -70,6 +70,11 @@
     const amountInput = document.getElementById("amount");
     const output = document.getElementById("output");
 
+    function truncate(num, decimals) {
+      const factor = Math.pow(10, decimals);
+      return Math.floor(num * factor) / factor;
+    }
+
     function calculate() {
       const rate = parseFloat(rateInput.value);
       const amount = parseFloat(amountInput.value);
@@ -83,15 +88,14 @@
         return;
       }
 
-      // 原始精确值
+      // Cut to 4 decimals (no rounding)
+      const rateF_display = truncate(rate * 0.985, 4);
+      const rateT_display = truncate(rate * 0.9915, 4);
+
+      // Use full precision for calculation
       const rateF_full = rate * 0.985;
       const rateT_full = rate * 0.9915;
 
-      // 仅显示时四舍五入到 4 位
-      const rateF_display = Math.round(rateF_full * 10000) / 10000;
-      const rateT_display = Math.round(rateT_full * 10000) / 10000;
-
-      // 金额计算使用完整精度
       const resultF = rateF_full * amount;
       const resultT = rateT_full * amount;
 
@@ -108,3 +112,4 @@
   </script>
 </body>
 </html>
+
